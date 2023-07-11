@@ -8,6 +8,7 @@ import {ERC20} from "../ERC20.sol";
 import {ECDSA} from "../../../utils/cryptography/ECDSA.sol";
 import {EIP712} from "../../../utils/cryptography/EIP712.sol";
 import {Nonces} from "../../../utils/Nonces.sol";
+import {Initializable} from "../../../proxy/utils/Initializable.sol";
 
 /**
  * @dev Implementation of the ERC20 Permit extension allowing approvals to be made via signatures, as defined in
@@ -19,7 +20,7 @@ import {Nonces} from "../../../utils/Nonces.sol";
  */
 abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
     // solhint-disable-next-line var-name-mixedcase
-    bytes32 private constant _PERMIT_TYPEHASH =
+    bytes32 internal _PERMIT_TYPEHASH =
         keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
 
     /**
@@ -38,6 +39,11 @@ abstract contract ERC20Permit is ERC20, IERC20Permit, EIP712, Nonces {
      * It's a good idea to use the same `name` that is defined as the ERC20 token name.
      */
     constructor(string memory name) EIP712(name, "1") {}
+
+    function initialize(string memory name, string memory symbol) public virtual onlyInitializing {
+        EIP712.initialize(name, "1");
+        ERC20.initialize(name, symbol);
+    }
 
     /**
      * @dev See {IERC20Permit-permit}.
