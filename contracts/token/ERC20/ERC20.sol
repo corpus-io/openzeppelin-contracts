@@ -7,6 +7,7 @@ import {IERC20} from "./IERC20.sol";
 import {IERC20Metadata} from "./extensions/IERC20Metadata.sol";
 import {Context} from "../../utils/Context.sol";
 import {IERC20Errors} from "../../interfaces/draft-IERC6093.sol";
+import {Initializable} from "../../proxy/utils/Initializable.sol";
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -35,7 +36,7 @@ import {IERC20Errors} from "../../interfaces/draft-IERC6093.sol";
  * functions have been added to mitigate the well-known issues around setting
  * allowances. See {IERC20-approve}.
  */
-abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
+abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors, Initializable {
     mapping(address => uint256) private _balances;
 
     mapping(address => mapping(address => uint256)) private _allowances;
@@ -56,7 +57,11 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      * All two of these values are immutable: they can only be set once during
      * construction.
      */
-    constructor(string memory name_, string memory symbol_) {
+    constructor(string memory name_, string memory symbol_) initializer {
+        initialize(name_, symbol_);
+    }
+
+    function initialize(string memory name_, string memory symbol_) public onlyInitializing {
         _name = name_;
         _symbol = symbol_;
     }
